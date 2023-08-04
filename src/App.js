@@ -6,19 +6,20 @@ function App() {
     const [country,setcountry] = useState([]);
     const [state,setstate] = useState([]); 
     const [city,setcity] = useState([]);
+    const [selectCountry,setselectCountry] = useState('');
+    const [selectState,setselectState] = useState('');
     
-    // TjZNU1M4VDR1UUlVeVNDdFlXMVdBWFIzUGs0Q016eXhPY0F0cUZydA==
 
     // -----------------------------------------------
     // Country  
     // -----------------------------------------------
 
-    var headers = new Headers();
-    headers.append("X-CSCAPI-KEY", "TjZNU1M4VDR1UUlVeVNDdFlXMVdBWFIzUGs0Q016eXhPY0F0cUZydA==");
+    var countryHeaders = new Headers();
+    countryHeaders.append("X-CSCAPI-KEY", "TjZNU1M4VDR1UUlVeVNDdFlXMVdBWFIzUGs0Q016eXhPY0F0cUZydA==");
     
     var requestOptions = {
         method: 'GET',
-        headers: headers,
+        headers: countryHeaders,
         redirect: 'follow'
     };
     
@@ -36,56 +37,60 @@ function App() {
     // State  
     // -----------------------------------------------
     
-    var headers = new Headers();
-    headers.append("X-CSCAPI-KEY", "TjZNU1M4VDR1UUlVeVNDdFlXMVdBWFIzUGs0Q016eXhPY0F0cUZydA==");
+    var stateHeaders = new Headers();
+    stateHeaders.append("X-CSCAPI-KEY", "TjZNU1M4VDR1UUlVeVNDdFlXMVdBWFIzUGs0Q016eXhPY0F0cUZydA==");
 
     var requestOptions = {
         method: 'GET',
-        headers: headers,
+        headers: stateHeaders,
         redirect: 'follow'
     };
     
-    function handleState(e)
-    {
-        let states = e.target.value;
-        fetch(`https://api.countrystatecity.in/v1/countries/${states}/states`, requestOptions)
-        .then(response => response.json())
-        .then(result => {
-            console.log(result);
-            setstate(result);
-        })
-        .catch(error => console.log('error', error));
-    }
+    useEffect(() => {
+        if(selectCountry)
+        {
+            fetch(`https://api.countrystatecity.in/v1/countries/${selectCountry}/states`, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                setstate(result);
+            })
+            .catch(error => console.log('error', error));
+        }
+    } , [selectCountry])
+        
     
     
     // -----------------------------------------------
     // City
     // -----------------------------------------------
     
-    var headers = new Headers();
-    headers.append("X-CSCAPI-KEY", "TjZNU1M4VDR1UUlVeVNDdFlXMVdBWFIzUGs0Q016eXhPY0F0cUZydA==");
+    var cityHeaders = new Headers();
+    cityHeaders.append("X-CSCAPI-KEY", "TjZNU1M4VDR1UUlVeVNDdFlXMVdBWFIzUGs0Q016eXhPY0F0cUZydA==");
     
     var requestOptions = {
         method: 'GET',
-        headers: headers,
+        headers: cityHeaders,
         redirect: 'follow'
     };
     
-    function handleCity(e)
-    {
-        var cities = e.target.value;
-        fetch(`https://api.countrystatecity.in/v1/countries/IN/states/${cities}/cities`, requestOptions)
-        .then(response => response.json())
-        .then(result => {
-            console.log(result);
-            setcity(result);
-        })
-        .catch(error => console.log('error', error));
-    }    
+    useEffect(() => { 
+            if(selectState)
+            {
+                fetch(`https://api.countrystatecity.in/v1/countries/${selectCountry}/states/${selectState}/cities`, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result);
+                    setcity(result);
+                })
+                .catch(error => console.log('error', error));
+            }
+    } , [selectState])
+           
     
     return (
         <>
-        <select onChange={handleState}>
+        <select onChange={(e) => setselectCountry(e.target.value)}>
             <option selected disabled>Select Country</option>
                 {
                     country.map((country,index) => {
@@ -96,7 +101,7 @@ function App() {
                 }
         </select>
 
-        <select onChange={handleCity}>
+        <select onChange={(e) => setselectState(e.target.value)}>
             <option selected disabled>Select State</option>
                 {
                     state.map((state,index) => {
